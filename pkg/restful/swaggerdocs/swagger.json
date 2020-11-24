@@ -1,0 +1,16 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "The framework use for init new service.",
+        "title": "wanxin-blank-service",
+        "contact": {
+            "name": "Luckyboys",
+            "url": "http://dev-gitlab.wanxingrowth.com/fanli/order/v2/issues",
+            "email": "huangyichao@wanxingrowth.com"
+        },
+        "license": {},
+        "version": "0.1"
+    },
+    "host": "localhost:8080",
+    "paths": {}
+}

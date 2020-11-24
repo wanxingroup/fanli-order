@@ -1,0 +1,31 @@
+rpc:
+  enable: true
+  ip: 127.0.0.1
+  port: 8088
+log:
+  level: debug
+mysql:
+  common:
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password:
+    database: fanli_order
+    logMode: true
+redis:
+  common:
+    host: 127.0.0.1
+    port: 6379
+rpcServices:
+  goods:
+    host: 127.0.0.1
+    port: 8089
+    connectTimeout: 3s
+  fuyou:
+    host: 127.0.0.1
+    port: 8093
+    connectTimeout: 3s
+  rebate:
+    host: 127.0.0.1
+    port: 8099
+    connectTimeout: 3s

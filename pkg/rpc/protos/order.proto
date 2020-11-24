@@ -1,0 +1,429 @@
+syntax = "proto3";
+
+package protos;
+
+import "common.proto";
+
+// Order service definition.
+service OrderController {
+    rpc OrderDetails (OrderDetailsRequest) returns (OrderDetailsReply) {
+    }
+    rpc CancelOrder (CancelOrderRequest) returns (CancelOrderReply) {
+    }
+    rpc ChangeRefundStatus(ChangeRefundStatusRequest) returns (ChangeRefundStatusReply) {
+    }
+    rpc PaidOrder (PaidOrderRequest) returns (PaidOrderReply) {
+    }
+    rpc GetOrderList (GetOrderListRequest) returns (GetOrderListReply) {
+    }
+    rpc CreateOrder (CreateOrderRequest) returns (CreateOrderReply) {
+    }
+    rpc DeliverOrder (DeliverOrderRequest) returns (DeliverOrderReply) {
+    }
+    rpc ReceivedOrder (ReceivedOrderRequest) returns (ReceivedOrderReply) {
+    }
+    rpc CommentOrder (CommentOrderRequest) returns (CommentOrderReply) {
+    }
+}
+
+// 创建订单请求参数
+message CreateOrderRequest {
+    // 商家ID
+    uint64 merchantId = 1;
+    // 店铺ID
+    uint64 shopId = 2;
+    // 用户ID
+    uint64 userId = 3;
+    // 创建订单包含的商品列表
+    repeated CreateOrderGoods goodsList = 4;
+    // 创建订单使用的优惠资源信息
+    repeated CreateOrderDiscount discounts = 5;
+    // 收货地址
+    Address address = 6;
+    // 订单备注
+    string remark = 7;
+    // 附属信息（后续实现，用于记录订单来源、统计信息等下单时的瞬间的附属信息）
+    repeated Attribute attributes = 8;
+    // VIP价权限
+    bool isVip = 9;
+    // 订单类型
+    OrderType orderType = 10;
+    // 订单 ID(未传自动生成)
+    uint64 orderId = 11;
+}
+
+// 创建订单返回值
+message CreateOrderReply {
+    // 订单信息
+    Order order = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 创建订单包含的商品信息
+message CreateOrderGoods {
+    // 商品ID
+    uint64 goodsId = 1;
+    // SKU ID
+    uint64 skuId = 2;
+    // 商品数量
+    uint32 count = 3;
+    // 价格（单位：分）
+    uint64 price = 4;
+    // 会员价
+    uint64 vipPrice = 5;
+    // 积分
+    uint64 point = 6;
+    // 附属信息（后续实现，用于记录下单时原价或者下单时商品版本号之类的下单时的瞬间值）
+    repeated Attribute attributes = 7;
+}
+
+// 附加属性（一般用于附属信息数据）
+message Attribute {
+    // 属性名
+    string name = 1;
+    // 属性值
+    string value = 2;
+}
+
+// 创建订单使用的折扣信息
+message CreateOrderDiscount {
+    // 折扣类型（具体参考营销系统）
+    uint32 type = 1;
+    // 折扣对象ID
+    string objectId = 2;
+}
+
+// 订单地址信息
+message Address {
+    // 省份
+    string province = 1;
+    // 城市
+    string city = 2;
+    // 辖区
+    string district = 3;
+    // 接到
+    string street = 4;
+    // 具体地址
+    string address = 5;
+    // 收件人名称
+    string receiverName = 6;
+    // 联系电话
+    string tel = 7;
+}
+
+// 订单信息
+message Order {
+    // 订单ID
+    uint64 orderId = 1;
+    // 店铺ID
+    uint64 shopId = 2;
+    // 用户ID
+    uint64 userId = 3;
+    // 状态
+    OrderStatus status = 4;
+    // 商品总价格，单位：分
+    uint64 goodsTotalPrice = 5;
+    // 订单应付金额，单位：分
+    uint64 payable = 6;
+    // 运费，单位：分
+    uint32 freight = 7;
+    // 发货包裹信息
+    repeated Logistics logisticsList = 8;
+    // 商品列表
+    repeated Goods goodsList = 9;
+    // 折扣信息列表
+    repeated Discount discountList = 10;
+    // 地址信息
+    Address address = 11;
+    // 支付信息
+    repeated Payment paymentList = 12;
+    // 状态变更日志
+    repeated StatusModificationLog statusModificationLogList = 13;
+    // 订单是否已评价
+    Comment comment = 14;
+    // 订单创建时间（UNIX时间戳，单位：秒）
+    uint64 CreateTime = 15;
+    // 订单更新时间（UNIX时间戳，单位：秒）
+    uint64 UpdateTime = 16;
+    // 订单自动取消时间（UNIX时间戳，单位：秒，为零代表不会自动取消）
+    uint64 AutoCancelTime = 17;
+    // 备注
+    string remark = 18;
+    // 订单支付时间（UNIX 时间戳，单位：秒）
+    uint64 paidTime = 19;
+    // 应付积分
+    uint64 point = 20;
+    // 是否会员价购买
+    bool isVip = 21;
+    // 订单类型
+    OrderType orderType = 22;
+    // 退款状态
+    RefundStatus refundStatus = 23;
+}
+
+// 物流包裹信息
+message Logistics {
+    // 包裹ID（只是一个ID，并不是物流单号）
+    uint64 packageId = 1;
+    // 物流公司名称
+    string logisticsCompany = 2;
+    // 物流单号
+    string expressNumber = 3;
+}
+
+// 订单商品信息
+message Goods {
+    // 商品ID
+    uint64 spuId = 1;
+    // 商品SKU ID
+    uint64 skuId = 2;
+    // 商品数量
+    uint32 count = 3;
+    // 下单时的价格，单位：分
+    uint64 price = 4;
+    // 会员价
+    uint64 vipPrice = 5;
+    // 积分
+    uint64 point = 6;
+}
+
+// 订单折扣信息
+message Discount {
+    // 折扣类型（具体参考营销系统）
+    uint32 type = 1;
+    // 折扣对象ID
+    string objectId = 2;
+    // 折扣物品价值，单位：分
+    uint64 discountPrice = 3;
+}
+
+// 订单支付信息
+message Payment {
+    // 支付网关事务ID
+    string transactionId = 1;
+    // 实付金额，单位：分
+    uint64 paidPrice = 2;
+    // 支付渠道（富友、汇付）
+    string paymentChannel = 3;
+    // 支付方式（H5、APP、公众号、主被扫码）
+    string paymentMode = 4;
+    // 支付产品（微信、支付宝）
+    string paymentProduct = 5;
+    // 支付时间，UNIX时间戳，单位：秒
+    uint64 paidTime = 6;
+}
+
+// 订单状态变更日志
+message StatusModificationLog {
+    // 目标状态
+    OrderStatus destinationStatus = 1;
+    // 时间，UNIX时间戳，单位：秒
+    uint64 time = 2;
+}
+
+// 订单评论信息
+message Comment {
+    // 是否已评论
+    bool Commented = 1;
+}
+
+// 订单详情请求数据
+message OrderDetailsRequest {
+    // 订单ID
+    uint64 orderId = 1;
+    // 店铺ID
+    uint64 shopId = 2;
+    // 用户ID
+    uint64 userId = 3;
+}
+
+// 创建订单返回值
+message OrderDetailsReply {
+    // 订单信息
+    Order order = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 取消订单请求数据
+message CancelOrderRequest {
+    // 订单ID
+    uint64 orderId = 1;
+}
+
+// 取消订单返回值
+message CancelOrderReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 订单支付完成请求数据
+message PaidOrderRequest {
+    // 订单ID
+    uint64 orderId = 1;
+    // 订单支付信息
+    Payment payment = 2;
+}
+
+// 订单支付完成返回值
+message PaidOrderReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 订单发货请求数据
+message DeliverOrderRequest {
+    // 订单ID
+    uint64 orderId = 1;
+    // 发货包裹信息
+    DeliveryPackage deliveryPackage = 2;
+}
+
+// 订单发货返回数据
+message DeliverOrderReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 发货包裹信息
+message DeliveryPackage {
+    // 物流公司名称
+    string logisticsCompany = 2;
+    // 物流单号
+    string expressNumber = 3;
+}
+
+// 修改退款状态请求参数
+message ChangeRefundStatusRequest {
+    // 订单ID
+    uint64 orderId = 1;
+    RefundStatus status = 2;
+}
+
+// 修改退款状态返回值
+message ChangeRefundStatusReply {
+    // 错误信息
+    Error err = 1;
+    // 是否操作成功
+    bool success = 2;
+}
+
+// 评论订单请求数据
+message CommentOrderRequest {
+    // 订单ID
+    uint64 orderId = 1;
+    // 评论信息
+    repeated CommentGoods goodsList = 2;
+}
+
+message CommentOrderReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+// 评价商品信息
+message CommentGoods {
+    // 商品ID
+    uint64 goodsId = 1;
+    // SKU ID
+    uint64 skuId = 2;
+    // 评价分数
+    uint32 point = 3;
+    // 评价内容
+    string content = 4;
+    // 评价图片
+    repeated bytes images = 5;
+}
+
+// 获取订单列表请求（为防止数据被恶意爬取，商家 ID、店铺 ID、用户 ID 其中一项需要必填）
+message GetOrderListRequest {
+    // 商家ID（为零时不过滤）
+    uint64 merchantId = 1;
+    // 店铺ID（为零时不过滤）
+    uint64 shopId = 2;
+    // 用户ID（为零时不过滤）
+    repeated uint64 userIds = 3;
+    // 状态值（为零时不过滤）
+    OrderStatus status = 4;
+    // 指定订单 ID
+    repeated uint64 orderIds = 5;
+    // 创建订单的时间区间
+    TimeRange createTime = 6;
+    // 支付订单的时间区间
+    TimeRange paidTime = 7;
+    // 页码
+    uint64 page = 8;
+    // 分页大小（最大100）
+    uint64 pageSize = 9;
+    // 最后的订单 ID（用于分页使用，输出小于最后订单 ID 的记录）
+    uint64 lastOrderId = 10;
+    // 退款状态
+    repeated RefundStatus refundStatusList = 11;
+    // 订单类型
+    OrderType orderType = 12;
+}
+
+// 时间范围
+message TimeRange {
+    // 开始时间
+    uint64 startTime = 1;
+    // 结束时间
+    uint64 endTime = 2;
+}
+
+// 获取订单列表请求返回
+message GetOrderListReply {
+    // 订单列表
+    repeated Order orderList = 1;
+    // 总记录数
+    uint64 count = 2;
+    // 错误信息
+    Error error = 3;
+}
+
+// 确认订单已收货请求数据
+message ReceivedOrderRequest {
+    // 订单ID
+    uint64 orderId = 1;
+}
+
+// 确认订单已收货返回数据
+message ReceivedOrderReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
+
+enum OrderStatus {
+    Unknown = 0; // 未知状态值
+    NotPay = 1; // 未支付
+    Paid = 2; // 已支付
+    Delivered = 3; // 已发货
+    Received = 4; // 已收货
+    Closed = 5; // 订单关闭
+    Completed = 6; // 订单完成
+    Cancel = 7; // 订单取消
+}
+
+enum RefundStatus {
+    RefundStatusNormal      = 0; // 正常
+    RefundStatusApplying    = 1; // 申请中
+    RefundStatusCompleted   = 2; // 完成
+    RefundStatusReject      = 3; // 拒绝
+}
+
+enum OrderType {
+    OrderTypeUnknown = 0;   // 未知订单
+    OrderTypeShop    = 1;   // 商城订单
+    OrderTypeCard    = 2;   // 权益卡订单
+}

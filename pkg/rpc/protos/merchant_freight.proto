@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package protos;
+
+import "common.proto";
+
+// Merchant freight service definition.
+service MerchantFreightController {
+    rpc GetSetting (GetMerchantFreightRequest) returns (GetMerchantFreightReply) {
+    }
+    rpc SetSetting (SetMerchantFreightRequest) returns (SetMerchantFreightReply) {
+    }
+}
+
+// 获取商家店铺运费请求数据
+message GetMerchantFreightRequest {
+    // 店铺ID
+    uint64 shopId = 1;
+}
+
+// 获取商家店铺运费返回值
+message GetMerchantFreightReply {
+    // 店铺ID
+    uint64 shopId = 1;
+    // 运费设置
+    MerchantFreightSetting setting = 2;
+    // 错误信息
+    Error error = 3;
+}
+
+// 商家运费设置
+message MerchantFreightSetting {
+    // 是否包邮
+    bool isFreePostage = 1;
+    // 满足多少金额进行包邮，单位：分
+    uint64 conditionPrice = 2;
+    // 统一运费价格
+    uint32 freight = 3;
+}
+
+// 设置商家店铺运费请求数据
+message SetMerchantFreightRequest {
+    // 店铺ID
+    uint64 shopId = 1;
+    // 运费设置
+    MerchantFreightSetting setting = 2;
+}
+
+// 设置商家店铺运费返回值
+message SetMerchantFreightReply {
+    // 是否操作成功
+    bool success = 1;
+    // 错误信息
+    Error error = 2;
+}
