@@ -24,3 +24,13 @@ require (
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	google.golang.org/grpc v1.30.0
 )
+
+replace dev-gitlab.wanxingrowth.com/wanxin-go-micro/base => github.com/wanxingroup/base v0.2.27
+
+replace dev-gitlab.wanxingrowth.com/fanli/fuyou-payment-gateway => github.com/wanxingroup/fanli-fuyou-payment-gateway v0.0.0-20200828
+
+replace dev-gitlab.wanxingrowth.com/fanli/goods/v2 => github.com/wanxingroup/fanli-goods/v2 v2.0.0-20201124070303-ea0a037380c1
+
+replace dev-gitlab.wanxingrowth.com/fanli/rebate => github.com/wanxingroup/fanli-rebate v0.0.0
+
+replace dev-gitlab.wanxingrowth.com/fanli/user => github.com/wanxingroup/fanli-user v0.0.2
